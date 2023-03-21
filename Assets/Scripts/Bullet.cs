@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour {
     private Rigidbody2D rb;
+    [SerializeField] private int damageAmount;
 
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
@@ -16,9 +17,9 @@ public class Bullet : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        Target target = other.GetComponent<Target>();
+        IDamagable target = other.GetComponent<IDamagable>();
         if (target != null) {
-            target.Damage();
+            target.Damage(damageAmount);
             Destroy(gameObject);
         }
     }
