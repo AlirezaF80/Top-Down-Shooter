@@ -5,6 +5,14 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 public class Player : MonoBehaviour {
+    public static Player Instance { get; private set; }
+
+    public event EventHandler<ShootEventArgs> OnShoot;
+
+    public class ShootEventArgs : EventArgs {
+        public Vector3 shootTarget;
+    }
+
     private enum State {
         Moving,
         Dashing
@@ -24,11 +32,24 @@ public class Player : MonoBehaviour {
     private Rigidbody2D rb;
 
     private void Awake() {
+        Instance = this;
         rb = GetComponent<Rigidbody2D>();
         state = State.Moving;
     }
 
     private void Update() {
+        HandleMovement();
+        HandleShooting();
+    }
+
+    private void HandleShooting() {
+        if (Input.GetMouseButton(0)) {
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            OnShoot?.Invoke(this, new ShootEventArgs { shootTarget = mousePos });
+        }
+    }
+
+    private void HandleMovement() {
         moveDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         if (moveDir.magnitude > 0.1f) {
             lastMoveDir = moveDir.normalized;
