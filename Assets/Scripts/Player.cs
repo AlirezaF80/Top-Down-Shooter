@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour, IDamagable, IHealable {
     public static Player Instance { get; private set; }
 
     public event EventHandler<ShootEventArgs> OnShoot;
@@ -18,21 +18,26 @@ public class Player : MonoBehaviour {
         Dashing
     }
 
+
+    [SerializeField] private Weapon weapon;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashTimeMax;
     [SerializeField] private float dashCooldownMax;
+    [SerializeField] private int healthMax;
     private float dashTimer;
     private float dashCooldownTimer;
     private Vector2 moveDir;
     private Vector2 dashDir;
     private Vector2 lastMoveDir;
 
+    private HealthSystem healthSystem;
     private State state;
     private Rigidbody2D rb;
 
     private void Awake() {
         Instance = this;
+        healthSystem = new HealthSystem(healthMax);
         rb = GetComponent<Rigidbody2D>();
         state = State.Moving;
     }
@@ -86,5 +91,20 @@ public class Player : MonoBehaviour {
                 rb.velocity = dashDir * dashSpeed;
                 break;
         }
+    }
+
+    public void Damage(int damageAmount) {
+        healthSystem.Damage(damageAmount);
+        Debug.Log("Player health: " + healthSystem.GetHealth());
+    }
+
+    public void Heal(int healAmount) {
+        healthSystem.Heal(healAmount);
+        Debug.Log("Player health: " + healthSystem.GetHealth());
+    }
+
+    public void AddAmmo(int ammoAmount) {
+        weapon.AddAmmo(ammoAmount);
+        Debug.Log("Player ammo: " + weapon.GetAmmo());
     }
 }
