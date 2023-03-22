@@ -20,6 +20,7 @@ public class EnemyAI : MonoBehaviour {
     [SerializeField] private float timeBetweenAttacks = 2;
     private float damageTimer;
     private Rigidbody2D rb;
+    private int damageDealt;
 
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
@@ -77,6 +78,7 @@ public class EnemyAI : MonoBehaviour {
     private void AttackTarget() {
         if (damageTimer > 0) return;
         Player.Instance.Damage(damageAmount);
+        damageDealt += damageAmount;
         ResetAttackTimer();
     }
 
@@ -89,5 +91,9 @@ public class EnemyAI : MonoBehaviour {
     private bool IsTargetInRange() {
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
         return distanceToTarget <= stopRadius;
+    }
+
+    public int GetDamageDealt() {
+        return damageDealt;
     }
 }

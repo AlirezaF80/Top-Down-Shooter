@@ -1,35 +1,70 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemySpawner : MonoBehaviour {
-    [SerializeField] private GameObject enemyPrefab;
-    [SerializeField] private int enemyCount = 5;
-    [SerializeField] private float spawnDelay = 5f;
+    [SerializeField] private List<GameObject> enemyPrefabs;
     [SerializeField] private float spawnRadiusStart;
     [SerializeField] private float spawnRadiusEnd;
+    [SerializeField] private int timeBetweenWaves = 3;
 
+    private Dictionary<GameObject, int> enemyHealth = new Dictionary<GameObject, int>();
+
+    private int waveNumber = 1;
     private float spawnTimer;
-    private int enemiesSpawned;
+    private int currentEnemiesHealth;
 
-    private void Start() {
-        spawnTimer = spawnDelay;
-    }
-
-    private void Update() {
-        spawnTimer -= Time.deltaTime;
-        if (spawnTimer <= 0 && enemiesSpawned < enemyCount) {
-            SpawnEnemy();
-            spawnTimer = spawnDelay;
+    private void Awake() {
+        spawnTimer = 0;
+        foreach (GameObject enemy in enemyPrefabs) {
+            enemyHealth.Add(enemy, enemy.GetComponent<Enemy>().GetMaxHealth());
         }
     }
 
-    private void SpawnEnemy() {
-        Vector3 randomDir = UnityEngine.Random.insideUnitCircle.normalized;
-        float randomRadius = UnityEngine.Random.Range(spawnRadiusStart, spawnRadiusEnd);
+    private void Start() {
+        Enemy.OnDeath += Enemy_OnDeath;
+    }
+
+    private void Enemy_OnDeath(object sender, EventArgs e) {
+        Enemy.EnemyDeathEventArgs args = e as Enemy.EnemyDeathEventArgs;
+        currentEnemiesHealth -= args.EnemyMaxHealth;
+    }
+
+    private void Update() {
+        if (currentEnemiesHealth < GetWaveHealth(waveNumber) / 4f) {
+            spawnTimer -= Time.deltaTime;
+        }
+
+        if (spawnTimer <= 0f) {
+            SpawnWave(waveNumber);
+            spawnTimer = timeBetweenWaves;
+            waveNumber++;
+        }
+    }
+
+    private void SpawnWave(int waveNumber) {
+        currentEnemiesHealth = GetWaveHealth(waveNumber);
+        Debug.Log("Wave " + waveNumber + " spawned with " + currentEnemiesHealth + " health");
+        int enemiesSpawnedHealth = 0;
+
+        while (enemiesSpawnedHealth < currentEnemiesHealth) {
+            GameObject randomEnemy = enemyPrefabs[Random.Range(0, enemyPrefabs.Count)];
+            int randomEnemyHealth = enemyHealth[randomEnemy];
+
+            Instantiate(randomEnemy, GetRandomSpawnPosition(), Quaternion.identity);
+            enemiesSpawnedHealth += randomEnemyHealth;
+        }
+    }
+
+    private Vector3 GetRandomSpawnPosition() {
+        Vector3 randomDir = Random.insideUnitCircle.normalized;
+        float randomRadius = Random.Range(spawnRadiusStart, spawnRadiusEnd);
         Vector3 spawnPos = transform.position + randomDir * randomRadius;
-        Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
-        enemiesSpawned++;
+        return spawnPos;
+    }
+
+    private int GetWaveHealth(int wave) {
+        return wave * 10;
     }
 }

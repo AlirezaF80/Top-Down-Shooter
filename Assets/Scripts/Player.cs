@@ -107,4 +107,16 @@ public class Player : MonoBehaviour, IDamagable, IHealable {
         weapon.AddAmmo(ammoAmount);
         Debug.Log("Player ammo: " + weapon.GetAmmo());
     }
+
+    public int GetHealth() {
+        return healthSystem.GetHealth();
+    }
+
+    public int GetMaxHealth() {
+        return healthMax;
+    }
+
+    public int GetAmmo() {
+        return weapon.GetAmmo();
+    }
 }
