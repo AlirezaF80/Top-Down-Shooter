@@ -19,11 +19,16 @@ public class EnemyAI : MonoBehaviour {
     [SerializeField] private int damageAmount = 1;
     [SerializeField] private float damageRate = 2;
     private float damageTimer;
+    private Rigidbody2D rb;
+
+    private void Awake() {
+        rb = GetComponent<Rigidbody2D>();
+        damageTimer = damageRate;
+        state = State.Chasing;
+    }
 
     private void Start() {
         target = Player.Instance.transform;
-        state = State.Chasing;
-        damageTimer = damageRate;
     }
 
     private void Update() {
@@ -32,18 +37,36 @@ public class EnemyAI : MonoBehaviour {
         } else if (IsTargetInRange() && state == State.Chasing) {
             damageTimer = damageRate;
             state = State.Attacking;
+            rb.velocity = Vector2.zero;
         }
 
         damageTimer -= Time.deltaTime;
 
         switch (state) {
             case State.Chasing:
-                ChaseTarget();
                 break;
             case State.Attacking:
                 AttackTarget();
                 break;
         }
+    }
+
+    private void FixedUpdate() {
+        AimAtTarget();
+        
+        switch (state) {
+            case State.Chasing:
+                ChaseTarget();
+                break;
+            case State.Attacking:
+                break;
+        }
+    }
+
+    private void AimAtTarget() {
+        Vector3 direction = (target.position - transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
 
@@ -55,17 +78,12 @@ public class EnemyAI : MonoBehaviour {
 
 
     private void ChaseTarget() {
-        Vector3 targetPosition = target.position;
-        Vector3 curPosition = transform.position;
-        Vector3 dir = (targetPosition - curPosition).normalized;
-        Vector3 newPosition = curPosition + dir * (moveSpeed * Time.deltaTime);
-        transform.position = newPosition;
+        Vector3 direction = (target.position - transform.position).normalized;
+        rb.velocity = direction * moveSpeed;
     }
 
     private bool IsTargetInRange() {
-        Vector3 targetPosition = target.position;
-        Vector3 curPosition = transform.position;
-        float distanceToTarget = Vector3.Distance(curPosition, targetPosition);
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
         return distanceToTarget <= stopRadius;
     }
 }
