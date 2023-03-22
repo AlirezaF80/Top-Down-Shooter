@@ -17,14 +17,18 @@ public class EnemyAI : MonoBehaviour {
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float stopRadius = 1f;
     [SerializeField] private int damageAmount = 1;
-    [SerializeField] private float damageRate = 2;
+    [SerializeField] private float timeBetweenAttacks = 2;
     private float damageTimer;
     private Rigidbody2D rb;
 
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
-        damageTimer = damageRate;
+        ResetAttackTimer();
         state = State.Chasing;
+    }
+
+    private void ResetAttackTimer() {
+        damageTimer = timeBetweenAttacks;
     }
 
     private void Start() {
@@ -35,7 +39,7 @@ public class EnemyAI : MonoBehaviour {
         if (!IsTargetInRange() && state == State.Attacking) {
             state = State.Chasing;
         } else if (IsTargetInRange() && state == State.Chasing) {
-            damageTimer = damageRate;
+            ResetAttackTimer();
             state = State.Attacking;
             rb.velocity = Vector2.zero;
         }
@@ -53,7 +57,7 @@ public class EnemyAI : MonoBehaviour {
 
     private void FixedUpdate() {
         AimAtTarget();
-        
+
         switch (state) {
             case State.Chasing:
                 ChaseTarget();
@@ -73,7 +77,7 @@ public class EnemyAI : MonoBehaviour {
     private void AttackTarget() {
         if (damageTimer > 0) return;
         Player.Instance.Damage(damageAmount);
-        damageTimer = damageRate;
+        ResetAttackTimer();
     }
 
 
