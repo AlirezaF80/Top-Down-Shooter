@@ -7,9 +7,9 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField] private List<GameObject> enemyPrefabs;
     [SerializeField] private float spawnRadiusStart;
     [SerializeField] private float spawnRadiusEnd;
-    [SerializeField] private int timeBetweenWaves = 3;
+    [SerializeField] private int timeBetweenWaves = 5;
 
-    private Dictionary<GameObject, int> enemyHealth = new Dictionary<GameObject, int>();
+    private Dictionary<GameObject, int> enemyHealth = new();
 
     private int waveNumber = 1;
     private float spawnTimer;
@@ -32,7 +32,7 @@ public class EnemySpawner : MonoBehaviour {
     }
 
     private void Update() {
-        if (currentEnemiesHealth < GetWaveHealth(waveNumber) / 4f) {
+        if (currentEnemiesHealth <= 0) {
             spawnTimer -= Time.deltaTime;
         }
 

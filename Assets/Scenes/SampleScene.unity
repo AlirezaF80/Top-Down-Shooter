@@ -1070,7 +1070,7 @@ MonoBehaviour:
   - {fileID: 7798162790360942801, guid: 35e6ba0b304273c42ade43d0d6449dea, type: 3}
   spawnRadiusStart: 15
   spawnRadiusEnd: 20
-  timeBetweenWaves: 3
+  timeBetweenWaves: 5
 --- !u!4 &1865297981
 Transform:
   m_ObjectHideFlags: 0
