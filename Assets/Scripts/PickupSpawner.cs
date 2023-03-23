@@ -8,8 +8,10 @@ public class PickupSpawner : MonoBehaviour {
     [SerializeField] private GameObject ammoPickup;
     [SerializeField] private int timeBetweenPickups = 5;
     [SerializeField] private int spawnRadius = 15;
-    [SerializeField] private int minAmmoBeforeSpawn = 10;
+    [SerializeField] private int minAmmoBeforeSpawn = 25;
     [SerializeField] private int minHealthBeforeSpawn = 30;
+    [SerializeField] private int ammoPickupCount = 15;
+    [SerializeField] private int healthPickupAmount = 15;
 
     private float pickupTimer;
     private Player player;
@@ -24,8 +26,8 @@ public class PickupSpawner : MonoBehaviour {
     private void Update() {
         pickupTimer -= Time.deltaTime;
         if (pickupTimer <= 0f) {
-            pickupTimer = timeBetweenPickups;
             SpawnPickup();
+            pickupTimer = timeBetweenPickups;
         }
     }
 
@@ -35,9 +37,8 @@ public class PickupSpawner : MonoBehaviour {
         if (random == 0) { // 33% chance to spawn ammo
             SpawnAmmoPickup(args.EnemyMaxHealth * 2, args.DeathPosition);
         } else if (random == 1) { // 33% chance to spawn health
-            if (args.DamageDealt == 0) return;
-
-            SpawnHealthPickup(args.DamageDealt, args.DeathPosition);
+            if (args.DamageDealt > 0)
+                SpawnHealthPickup(args.DamageDealt, args.DeathPosition);
         } else { // 33% chance to do nothing
             return;
         }
@@ -45,15 +46,15 @@ public class PickupSpawner : MonoBehaviour {
 
     private void SpawnPickup() {
         Vector3 randomSpawnPosition = GetRandomSpawnPosition();
-
         if (player.GetHealth() < minHealthBeforeSpawn) {
-            SpawnHealthPickup(10, randomSpawnPosition);
-            return;
+            SpawnHealthPickup(healthPickupAmount, randomSpawnPosition);
+            Debug.Log("Spawned health pickup");
         }
 
+        randomSpawnPosition = GetRandomSpawnPosition();
         if (player.GetAmmo() < minAmmoBeforeSpawn) {
-            SpawnAmmoPickup(10, randomSpawnPosition);
-            return;
+            SpawnAmmoPickup(ammoPickupCount, randomSpawnPosition);
+            Debug.Log("Spawned ammo pickup");
         }
     }
 
@@ -62,8 +63,8 @@ public class PickupSpawner : MonoBehaviour {
         return transform.position + randomDir * spawnRadius;
     }
 
-    private void SpawnAmmoPickup(int ammoCount, Vector3 argsDeathPosition) {
-        Instantiate(ammoPickup, argsDeathPosition, Quaternion.identity).GetComponent<AmmoPickup>().Setup(ammoCount);
+    private void SpawnAmmoPickup(int ammoCount, Vector3 position) {
+        Instantiate(ammoPickup, position, Quaternion.identity).GetComponent<AmmoPickup>().Setup(ammoCount);
     }
 
     private void SpawnHealthPickup(int healthAmount, Vector3 position) {

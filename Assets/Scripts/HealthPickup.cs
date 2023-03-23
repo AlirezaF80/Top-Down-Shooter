@@ -1,10 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class HealthPickup : MonoBehaviour {
-    [SerializeField] private int healthAmount = 10;
-    [SerializeField] private int timeToDeSpawn = 3;
+    [SerializeField] private int defaultHealthAmount = 10;
+    [SerializeField] private int timeToDeSpawn = 5;
+    private int healthAmount;
+    private void Start() {
+        healthAmount = defaultHealthAmount;
+    }
 
     public void Setup(int healthAmount) {
         this.healthAmount = healthAmount;

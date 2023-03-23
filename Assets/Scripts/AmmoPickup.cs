@@ -1,10 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AmmoPickup : MonoBehaviour {
-    [SerializeField] private int ammoCount = 10;
-    [SerializeField] private int timeToDeSpawn = 3;
+    [SerializeField] private int defaultAmmoCount = 10;
+    [SerializeField] private int timeToDeSpawn = 5;
+    private int ammoCount;
+
+    private void Start() {
+        ammoCount = defaultAmmoCount;
+    }
 
     public void Setup(int ammoCount) {
         this.ammoCount = ammoCount;

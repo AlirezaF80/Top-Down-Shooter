@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthAmount: 10
-  timeToDeSpawn: 5
+  timeToDeSpawn: 8
 --- !u!1 &4689442362358477350
 GameObject:
   m_ObjectHideFlags: 0

@@ -361,6 +361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ammoCount: 10
+  timeToDeSpawn: 8
 --- !u!1 &3470764353089242860
 GameObject:
   m_ObjectHideFlags: 0

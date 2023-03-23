@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour {
+    public static event EventHandler OnShoot;
+
     [SerializeField] private float bulletSpeed;
     [SerializeField] private float bulletMaxDistance;
     [SerializeField] private int bulletDamageAmount;
@@ -40,17 +42,18 @@ public class Weapon : MonoBehaviour {
         if (shootTimer > 0) return;
         ResetShootTimer();
 
-        for (int i = 0; i < Mathf.Min(bulletPerShot, ammo); i++) {
-            ShootBullet(shootTarget);
+        int numBulletsToShoot = Mathf.Min(bulletPerShot, ammo);
+        for (int i = 0; i < numBulletsToShoot; i++) {
+            ShootBullet(shootTarget, -spreadAngle / 2 + i * spreadAngle / (numBulletsToShoot));
         }
 
+        OnShoot?.Invoke(this, EventArgs.Empty);
         ammo = Mathf.Max(0, ammo - bulletPerShot);
     }
 
-    private void ShootBullet(Vector3 shootTarget) {
+    private void ShootBullet(Vector3 shootTarget, float bulletSpreadAngle) {
         Vector2 shootDir = (shootTarget - gunEndPoint.position).normalized;
-        float randomSpreadAngle = UnityEngine.Random.Range(-spreadAngle, spreadAngle);
-        shootDir = Quaternion.Euler(0, 0, randomSpreadAngle) * shootDir;
+        shootDir = Quaternion.Euler(0, 0, bulletSpreadAngle) * shootDir;
         GameObject bulletGO = Instantiate(bulletPrefab, gunEndPoint.position, Quaternion.identity);
         Bullet bullet = bulletGO.GetComponent<Bullet>();
         bullet.Setup(shootDir, bulletSpeed, bulletMaxDistance, bulletDamageAmount);
