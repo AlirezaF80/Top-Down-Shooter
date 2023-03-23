@@ -18,9 +18,9 @@ public class AmmoPickup : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        Player player = other.GetComponent<Player>();
-        if (player != null) {
-            player.AddAmmo(ammoCount);
+        WeaponManager weaponManager = other.GetComponent<WeaponManager>();
+        if (weaponManager != null) {
+            WeaponManager.Instance.AddAmmo(ammoCount);
             Destroy(gameObject);
         }
     }

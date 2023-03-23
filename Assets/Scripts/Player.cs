@@ -111,15 +111,6 @@ public class Player : MonoBehaviour, IDamagable, IHealable {
         return healthSystem.GetHealth();
     }
 
-    public int GetAmmo() {
-        return weapon.GetAmmo();
-    }
-
-    public void AddAmmo(int ammoAmount) {
-        weapon.AddAmmo(ammoAmount);
-        Debug.Log("Player ammo: " + weapon.GetAmmo());
-    }
-
 
     public float GetDashTime() {
         return dashTime;

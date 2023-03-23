@@ -14,9 +14,11 @@ public class PickupSpawner : MonoBehaviour {
     [SerializeField] private int healthPickupAmount = 15;
 
     private float pickupTimer;
+    private WeaponManager weaponManager;
     private Player player;
 
     private void Start() {
+        weaponManager = WeaponManager.Instance;
         pickupTimer = timeBetweenPickups;
 
         player = Player.Instance;
@@ -48,13 +50,11 @@ public class PickupSpawner : MonoBehaviour {
         Vector3 randomSpawnPosition = GetRandomSpawnPosition();
         if (player.GetHealth() < minHealthBeforeSpawn) {
             SpawnHealthPickup(healthPickupAmount, randomSpawnPosition);
-            Debug.Log("Spawned health pickup");
         }
 
         randomSpawnPosition = GetRandomSpawnPosition();
-        if (player.GetAmmo() < minAmmoBeforeSpawn) {
+        if (weaponManager.GetAmmo() < minAmmoBeforeSpawn) {
             SpawnAmmoPickup(ammoPickupCount, randomSpawnPosition);
-            Debug.Log("Spawned ammo pickup");
         }
     }
 
