@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour, IDamagable {
     public static event EventHandler OnDeath;
+    public static event EventHandler OnHit;
 
     public class EnemyDeathEventArgs : EventArgs {
         public int EnemyMaxHealth { get; set; }
@@ -22,6 +23,9 @@ public class Enemy : MonoBehaviour, IDamagable {
 
     public void Damage(int damageAmount) {
         healthSystem.Damage(damageAmount);
+
+        OnHit?.Invoke(this, EventArgs.Empty);
+        
         if (healthSystem.GetHealth() == 0) {
             OnDeath?.Invoke(this, new EnemyDeathEventArgs {
                 EnemyMaxHealth = healthMax,
