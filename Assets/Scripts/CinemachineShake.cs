@@ -5,18 +5,17 @@ using UnityEngine;
 using Cinemachine;
 
 public class CinemachineShake : MonoBehaviour {
+    public static CinemachineShake Instance { get; private set; }
     private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private float shakeIntensity = 5f;
     [SerializeField] private float shakeDuration = 0.1f;
     private float shakeTimer;
 
     private void Awake() {
+        Instance = this;
         virtualCamera = GetComponent<CinemachineVirtualCamera>();
     }
 
-    private void Start() {
-        Enemy.OnHit += Enemy_OnHit;
-    }
 
     private void Enemy_OnHit(object sender, EventArgs e) {
         ShakeCamera();

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour, IDamagable {
     public static event EventHandler OnDeath;
-    public static event EventHandler OnHit;
+    public event EventHandler OnHit;
 
     public class EnemyDeathEventArgs : EventArgs {
         public int EnemyMaxHealth { get; set; }

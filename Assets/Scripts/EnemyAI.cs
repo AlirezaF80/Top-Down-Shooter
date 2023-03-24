@@ -57,8 +57,6 @@ public class EnemyAI : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        AimAtTarget();
-
         switch (state) {
             case State.Chasing:
                 ChaseTarget();
@@ -68,10 +66,8 @@ public class EnemyAI : MonoBehaviour {
         }
     }
 
-    private void AimAtTarget() {
-        Vector3 direction = (target.position - transform.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+    public Vector3 GetAimDirection() {
+        return (target.position - transform.position).normalized;
     }
 
 
@@ -95,5 +91,9 @@ public class EnemyAI : MonoBehaviour {
 
     public int GetDamageDealt() {
         return damageDealt;
+    }
+
+    public bool IsWalking() {
+        return state == State.Chasing;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponManager : MonoBehaviour {
-    public static WeaponManager Instance;
+    public static WeaponManager Instance { get; private set; }
 
     [SerializeField] private List<GameObject> weapons;
     private Weapon currentWeapon;
