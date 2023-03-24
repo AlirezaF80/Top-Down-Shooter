@@ -39,8 +39,10 @@ public class PickupSpawner : MonoBehaviour {
         if (random == 0) { // 33% chance to spawn ammo
             SpawnAmmoPickup(args.EnemyMaxHealth * 2, args.DeathPosition);
         } else if (random == 1) { // 33% chance to spawn health
-            if (args.DamageDealt > 0)
-                SpawnHealthPickup(args.DamageDealt, args.DeathPosition);
+            if (args.DamageDealt > 0) {
+                int healthAmount = UnityEngine.Random.Range(args.DamageDealt / 4, args.DamageDealt);
+                SpawnHealthPickup(healthAmount, args.DeathPosition);
+            }
         } else { // 33% chance to do nothing
             return;
         }
