@@ -6,12 +6,12 @@ using UnityEngine;
 public class PickupSpawner : MonoBehaviour {
     [SerializeField] private GameObject healthPickup;
     [SerializeField] private GameObject ammoPickup;
-    [SerializeField] private int timeBetweenPickups = 5;
-    [SerializeField] private int spawnRadius = 15;
+    [SerializeField] private int timeBetweenPickups = 3;
+    [SerializeField] private int spawnRadius = 10;
     [SerializeField] private int minAmmoBeforeSpawn = 25;
-    [SerializeField] private int minHealthBeforeSpawn = 30;
-    [SerializeField] private int ammoPickupCount = 15;
-    [SerializeField] private int healthPickupAmount = 15;
+    [SerializeField] private int minHealthBeforeSpawn = 35;
+    [SerializeField] private int ammoPickupCount = 10;
+    [SerializeField] private int healthPickupAmount = 10;
 
     private float pickupTimer;
     private WeaponManager weaponManager;
@@ -55,9 +55,10 @@ public class PickupSpawner : MonoBehaviour {
         }
 
         randomSpawnPosition = GetRandomSpawnPosition();
-        if (weaponManager.GetAmmo() < minAmmoBeforeSpawn) {
-            SpawnAmmoPickup(ammoPickupCount, randomSpawnPosition);
-        }
+        if (weaponManager.HasWeapon())
+            if (weaponManager.GetAmmo() < minAmmoBeforeSpawn) {
+                SpawnAmmoPickup(ammoPickupCount, randomSpawnPosition);
+            }
     }
 
     private Vector3 GetRandomSpawnPosition() {

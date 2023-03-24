@@ -16,7 +16,6 @@ public class LowHPVisual : MonoBehaviour {
     private Player player;
 
     private float curWeight;
-    private int lastHealth;
     private float targetWeight;
     private float fadeTimer;
     private bool isLowHealth = false;
@@ -28,7 +27,6 @@ public class LowHPVisual : MonoBehaviour {
 
     private void Start() {
         player = Player.Instance;
-        lastHealth = player.GetHealth();
         volume.sharedProfile.TryGet<Vignette>(out vignette);
         volume.sharedProfile.TryGet<ChromaticAberration>(out chromaticAberration);
         volume.sharedProfile.TryGet<LensDistortion>(out lensDistortion);

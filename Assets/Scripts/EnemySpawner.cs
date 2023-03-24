@@ -5,20 +5,23 @@ using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class EnemySpawner : MonoBehaviour {
+    public static EnemySpawner Instance { get; private set; }
+    public static event EventHandler OnWaveNumberChanged;
     [SerializeField] private List<GameObject> enemyPrefabList;
     [SerializeField] private float spawnRadiusStart;
     [SerializeField] private float spawnRadiusEnd;
     [SerializeField] private int timeBetweenWaves = 5;
+    [SerializeField] private List<int> waveToUnlockWeaponList = new();
 
     private Dictionary<GameObject, int> enemyHealthDict = new();
-    [SerializeField] private List<int> waveToUnlockWeaponList = new();
 
     private int waveNumber = 0;
     private float spawnTimer;
     private int currentEnemiesHealth;
-    private int currentWeaponIndex = 0;
+    private int nextWeaponIndex = 0;
 
     private void Awake() {
+        Instance = this;
         spawnTimer = timeBetweenWaves;
 
         foreach (GameObject enemy in enemyPrefabList) {
@@ -59,6 +62,8 @@ public class EnemySpawner : MonoBehaviour {
             Instantiate(randomEnemy, GetRandomSpawnPosition(), Quaternion.identity);
             currentEnemiesHealth += randomEnemyHealth;
         }
+        
+        OnWaveNumberChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private Vector3 GetRandomSpawnPosition() {
@@ -73,10 +78,14 @@ public class EnemySpawner : MonoBehaviour {
     }
 
     private void UnlockWeapon(int waveNumber) {
-        if (currentWeaponIndex >= waveToUnlockWeaponList.Count) return;
-        if (waveNumber >= waveToUnlockWeaponList[currentWeaponIndex]) {
-            WeaponManager.Instance.EquipWeapon(currentWeaponIndex);
-            currentWeaponIndex++;
+        if (nextWeaponIndex >= waveToUnlockWeaponList.Count) return;
+        if (waveNumber >= waveToUnlockWeaponList[nextWeaponIndex]) {
+            WeaponManager.Instance.EquipWeapon(nextWeaponIndex);
+            nextWeaponIndex++;
         }
+    }
+    
+    public int GetWaveNumber() {
+        return waveNumber;
     }
 }

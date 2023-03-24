@@ -21,7 +21,6 @@ public class Player : MonoBehaviour, IDamagable, IHealable {
     }
 
 
-    [SerializeField] private Weapon weapon;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashTime;
@@ -119,9 +118,5 @@ public class Player : MonoBehaviour, IDamagable, IHealable {
     public bool IsWalking() {
         float walkSpeedThreshold = 0.1f;
         return moveDir.magnitude > walkSpeedThreshold;
-    }
-
-    public int GetMaxHealth() {
-        return healthMax;
     }
 }
