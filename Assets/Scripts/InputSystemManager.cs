@@ -4,6 +4,8 @@ using UnityEngine;
 public class InputSystemManager : MonoBehaviour {
     public static InputSystemManager Instance { get; private set; }
 
+    public event EventHandler OnRestart;
+
     public event EventHandler OnDash;
 
     private void Awake() {
@@ -13,6 +15,10 @@ public class InputSystemManager : MonoBehaviour {
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
             OnDash?.Invoke(this, EventArgs.Empty);
+        }
+
+        if (Input.GetKeyDown(KeyCode.R)) {
+            OnRestart?.Invoke(this, EventArgs.Empty);
         }
     }
 
