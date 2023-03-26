@@ -20,22 +20,22 @@ public class Weapon : MonoBehaviour {
     private int ammo;
 
     private void Start() {
-        Player.Instance.OnShoot += Player_OnShoot;
         ResetShootTimer();
         ammo = initialAmmo;
+    }
+
+    private void Update() {
+        shootTimer -= Time.deltaTime;
+        if (InputSystemManager.Instance.IsShooting()) {
+            Vector3 shootTarget = InputSystemManager.Instance.GetMouseWorldPosition();
+            Shoot(shootTarget);
+        }
     }
 
     private void ResetShootTimer() {
         shootTimer = timeBetweenShots;
     }
 
-    private void Update() {
-        shootTimer -= Time.deltaTime;
-    }
-
-    private void Player_OnShoot(object sender, Player.ShootEventArgs e) {
-        Shoot(e.shootTarget);
-    }
 
     private void Shoot(Vector3 shootTarget) {
         if (ammo <= 0) return;

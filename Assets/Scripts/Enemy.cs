@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour, IDamagable {
-    public static event EventHandler OnDeath;
+    public static event EventHandler<EnemyDeathEventArgs> OnDeath;
     public event EventHandler OnHit;
 
     public class EnemyDeathEventArgs : EventArgs {
@@ -25,18 +25,23 @@ public class Enemy : MonoBehaviour, IDamagable {
         healthSystem.Damage(damageAmount);
 
         OnHit?.Invoke(this, EventArgs.Empty);
-        
+
         if (healthSystem.GetHealth() == 0) {
-            OnDeath?.Invoke(this, new EnemyDeathEventArgs {
-                EnemyMaxHealth = healthMax,
-                DamageDealt = GetComponent<EnemyAI>().GetDamageDealt(),
-                DeathPosition = transform.position
-            });
-            Destroy(gameObject);
+            Die();
         }
     }
 
     public int GetMaxHealth() {
         return healthMax;
+    }
+
+
+    public void Die() {
+        OnDeath?.Invoke(this, new EnemyDeathEventArgs {
+            EnemyMaxHealth = healthMax,
+            DamageDealt = GetComponent<EnemyAI>().GetDamageDealt(),
+            DeathPosition = transform.position
+        });
+        Destroy(gameObject);
     }
 }

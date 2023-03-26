@@ -2,39 +2,34 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Player : MonoBehaviour, IDamagable, IHealable {
     public static Player Instance { get; private set; }
-
-    public event EventHandler<ShootEventArgs> OnShoot;
+    public event EventHandler OnDeath;
     public event EventHandler OnPlayerHit;
     public event EventHandler OnDash;
-
-    public class ShootEventArgs : EventArgs {
-        public Vector3 shootTarget;
-    }
-
-    private enum State {
-        Moving,
-        Dashing
-    }
-
 
     [SerializeField] private float moveSpeed;
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashTime;
     [SerializeField] private float dashCooldownMax;
     [SerializeField] private int healthMax;
+    
     private float dashTimer;
     private float dashCooldownTimer;
     private Vector2 moveDir;
     private Vector2 dashDir;
     private Vector2 lastMoveDir;
-
     private HealthSystem healthSystem;
     private State state;
+
+    private enum State {
+        Moving,
+        Dashing
+    }
+
     private Rigidbody2D rb;
+
 
     private void Awake() {
         Instance = this;
@@ -43,9 +38,23 @@ public class Player : MonoBehaviour, IDamagable, IHealable {
         state = State.Moving;
     }
 
+    private void Start() {
+        InputSystemManager.Instance.OnDash += InputSystem_OnDash;
+    }
+
+    private void InputSystem_OnDash(object sender, EventArgs e) {
+        if (dashCooldownTimer < 0) {
+            dashDir = lastMoveDir;
+            dashTimer = dashTime;
+            dashCooldownTimer = dashCooldownMax;
+            state = State.Dashing;
+            OnDash?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+
     private void Update() {
         HandleMovement();
-        HandleShooting();
     }
 
     private void FixedUpdate() {
@@ -59,29 +68,16 @@ public class Player : MonoBehaviour, IDamagable, IHealable {
         }
     }
 
-    private void HandleShooting() {
-        if (Input.GetMouseButton(0)) {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            OnShoot?.Invoke(this, new ShootEventArgs { shootTarget = mousePos });
-        }
-    }
 
     private void HandleMovement() {
-        moveDir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        if (moveDir.magnitude > 0.1f) {
+        moveDir = InputSystemManager.Instance.GetMoveInput();
+        float moveSpeedThreshold = 0.1f;
+        if (moveDir.magnitude > moveSpeedThreshold) {
             lastMoveDir = moveDir.normalized;
         }
 
         switch (state) {
             case State.Moving:
-                if (Input.GetKeyDown(KeyCode.Space) && dashCooldownTimer < 0) {
-                    dashTimer = dashTime;
-                    dashCooldownTimer = dashCooldownMax;
-                    dashDir = lastMoveDir;
-                    state = State.Dashing;
-                    OnDash?.Invoke(this, EventArgs.Empty);
-                }
-
                 break;
             case State.Dashing:
                 dashTimer -= Time.deltaTime;
@@ -98,12 +94,13 @@ public class Player : MonoBehaviour, IDamagable, IHealable {
     public void Damage(int damageAmount) {
         OnPlayerHit?.Invoke(this, EventArgs.Empty);
         healthSystem.Damage(damageAmount);
-        Debug.Log("Player health: " + healthSystem.GetHealth());
+        if (healthSystem.GetHealth() == 0) {
+            Die();
+        }
     }
 
     public void Heal(int healAmount) {
         healthSystem.Heal(healAmount);
-        Debug.Log("Player health: " + healthSystem.GetHealth());
     }
 
     public int GetHealth() {
@@ -118,5 +115,9 @@ public class Player : MonoBehaviour, IDamagable, IHealable {
     public bool IsWalking() {
         float walkSpeedThreshold = 0.1f;
         return moveDir.magnitude > walkSpeedThreshold;
+    }
+
+    public void Die() {
+        OnDeath?.Invoke(this, EventArgs.Empty);
     }
 }

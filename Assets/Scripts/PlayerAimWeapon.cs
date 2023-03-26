@@ -7,7 +7,7 @@ public class PlayerAimWeapon : MonoBehaviour {
     [SerializeField] private Transform playerVisualTransform;
 
     private void Update() {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mousePos = InputSystemManager.Instance.GetMouseWorldPosition();
         Vector3 aimDir = (mousePos - transform.position).normalized;
         float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
         aimTransform.rotation = Quaternion.Euler(0, 0, angle);
@@ -18,6 +18,7 @@ public class PlayerAimWeapon : MonoBehaviour {
         } else {
             localScale.y = 1f;
         }
+
         aimTransform.localScale = localScale;
         localScale = Vector3.one;
         if (angle > 90 || angle < -90) {
@@ -25,6 +26,7 @@ public class PlayerAimWeapon : MonoBehaviour {
         } else {
             localScale.x = 1f;
         }
+
         playerVisualTransform.localScale = localScale;
     }
 }
