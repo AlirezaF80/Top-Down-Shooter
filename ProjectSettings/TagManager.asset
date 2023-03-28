@@ -50,6 +50,6 @@ TagManager:
   - name: Weapons
     uniqueID: 3369454451
     locked: 0
-  - name: Cursor
+  - name: Pickups
     uniqueID: 657004781
     locked: 0
